@@ -4,7 +4,7 @@ var cheerio = require('cheerio');
 var fs = require('fs-extra');
 var moment = require('moment-timezone');
 
-var date = moment().tz("Asia/Beijing").format('YYYY-MM-DD hh:mm:ss');
+var date = moment().tz("Asia/Shanghai").format('YYYY-MM-DD hh:mm:ss');
 
 console.log(date);
 
