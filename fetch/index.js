@@ -98,7 +98,7 @@ var parseData = function (rawContent) {
 		});
 		total.push(data);
 	});
-
+	setTimeout(getData, getTimerTime('23:00:00'));
 	try {
 		delete require.cache[require.resolve('../db/history.json')];
 		var history = require('../db/history.json');
@@ -122,7 +122,7 @@ var parseData = function (rawContent) {
 		fs.outputJson('../db/history.json', total, function (err) {
 			missStat(30);
 			missStat(60);
-			setTimeout(getData, getTimerTime('23:00:00'));
+			
 		});
 	}
 };
