@@ -2,10 +2,98 @@
 <html>
   <head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <!-- <link rel='stylesheet' href='/stylesheets/style.css' /> -->
+    <style type="text/css">
+    	.red {
+    		color: red;
+    	}
+    </style>
   </head>
   <body>
     <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <div class="left">
+    	<h4>预测：</h4>
+    	<select id="select"></select>
+    	<div id="result_box"></div>
+    </div>
+    <div class="right">
+    	<h4>结果：</h4>
+    	<div id="final_box"></div>
+    </div>
+    <script type="text/javascript" src="/js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript">
+    	var result, list;
+
+    	$.getJSON('/getHistory', function (data) {
+    		// console.log(data);
+    		list = data;
+	    	$.getJSON('/getResult', function (data) {
+	    		result = data;
+	    		var options = '';
+	    		for (var key in data) {
+	    			options += '<option value="' + key + '">' + key + '</option>'
+	    		}
+	    		$('#select').html(options);
+	    		$('#result_box').html(getShowResult($('#select').val()));
+	    	});
+    	});
+
+    	var getShowResult = function (key) {
+    		var final = getShowFinal(key);
+    		var data = result[key];
+    		var html = '';
+    		data.forEach(function (item, index) {
+    			if (final) {
+    				item.forEach(function (item2, index2) {
+    					var final2 = final.slice(0, 6);
+    					if (index2 === 6) {
+    						if (item2 === final[final.length - 1]) {
+    							html += '<span class="red">' + item2 + '</span>';
+    						} else {
+    							html += item2;
+    						}
+    					} else {
+    						var ok = false;
+	    					for (var i = 0; i < final2.length; i++) {
+	    						if (item2 === final2[i]) {
+	    							html += '<span class="red">' + item2 + '</span>, ';
+	    							ok = true;
+	    							break;
+	    						}
+	    					} 
+	    					if (!ok) {
+	    							html += item2 + ', ';	    						
+	    					}						
+    					}
+
+    				});
+    				html += '<br />'
+    			} else {
+    				html += item.join(', ') + '<br />';
+    			}
+    			
+    		});
+    		if (final) {
+    			$('#final_box').html(final.slice(0, 1) + '<br />' + final.slice(1).join(', '));
+    		} else {
+    			$('#final_box').html('还未公布');
+    		}
+    		// console.log(final);
+    		return html;
+    	};
+
+    	var getShowFinal = function (key) {
+    		for (var i = 0; i < list.length; i++) {
+    			if (list[i][0] === key) {
+    				return list[i];
+    			}
+    		}
+    	};
+
+    	$('#select').change(function () {
+    		var key = $(this).val();
+    		$('#result_box').html(getShowResult(key));
+    	});
+    </script>
   </body>
 </html>
