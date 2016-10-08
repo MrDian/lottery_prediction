@@ -48,7 +48,7 @@ var getTimerTime = function (time, delay) {
 var log = function (msg) {
 	var date = moment().tz('Asia/Shanghai').format('YYYY-MM-DD HH:mm:ss');
 
-	fs.appendFile('../db/log.txt', '[' + date + '] ' + msg + '\n', function () {
+	fs.appendFile(process.cwd() + '/db/log.txt', '[' + date + '] ' + msg + '\n', function () {
 
 	});
 };
@@ -85,6 +85,10 @@ var parseData = function (rawContent) {
 	var total = [];
 	var $ = cheerio.load(rawContent);
 	var $dataList = $('.historylist tbody>tr');
+
+	setTimeout(function () {
+		setTimeout(getData, getTimerTime('23:00:00'));
+	}, 5000);
 	
 	$dataList.each(function () {
 		var data = [];
@@ -98,12 +102,12 @@ var parseData = function (rawContent) {
 		});
 		total.push(data);
 	});
-	setTimeout(getData, getTimerTime('23:00:00'));
+
 	try {
-		delete require.cache[require.resolve('../db/history.json')];
-		var history = require('../db/history.json');
+		delete require.cache[require.resolve(process.cwd() + '/db/history.json')];
+		var history = require(process.cwd() + '/db/history.json');
 	} catch (e) {
-		fs.outputJson('../db/history.json', total, function (err) {});
+		fs.outputJson(process.cwd() + '/db/history.json', total, function (err) {});
 		return;
 	}
 	var latest = history[0];
@@ -119,7 +123,7 @@ var parseData = function (rawContent) {
 
 	if (cutIndex >= 0) {
 		total = total.splice(0, cutIndex).concat(history);
-		fs.outputJson('../db/history.json', total, function (err) {
+		fs.outputJson(process.cwd() + '/db/history.json', total, function (err) {
 			missStat(30);
 			missStat(60);
 			
@@ -128,15 +132,15 @@ var parseData = function (rawContent) {
 };
 
 var missStat = function (issueLen) {
-	delete require.cache[require.resolve('../db/history.json')];
-	var history = require('../db/history.json');
+	delete require.cache[require.resolve(process.cwd() + '/db/history.json')];
+	var history = require(process.cwd() + '/db/history.json');
 	history = history.slice(0);
 	issueLen = issueLen ? issueLen : history.length;
 
 	history = history.slice(0, issueLen);
 
-	var redMiss = require('../db/red_miss.json');
-	var blueMiss = require('../db/blue_miss.json');
+	var redMiss = require(process.cwd() + '/db/red_miss.json');
+	var blueMiss = require(process.cwd() + '/db/blue_miss.json');
 
 	blueMiss = Object.assign({}, blueMiss);
 	redMiss = Object.assign({}, redMiss);
@@ -165,11 +169,11 @@ var missStat = function (issueLen) {
 	}
 
 	// console.log(blueMiss);
-	fs.outputJson('../db/' + issueLen + '_blue_miss.json', blueMiss, function (err) {
+	fs.outputJson(process.cwd() + '/db/' + issueLen + '_blue_miss.json', blueMiss, function (err) {
 
 	});
 
-	fs.outputJson('../db/' + issueLen + '_red_miss.json', redMiss, function (err) {
+	fs.outputJson(process.cwd() + '/db/' + issueLen + '_red_miss.json', redMiss, function (err) {
 
 	});
 };
@@ -177,13 +181,17 @@ var missStat = function (issueLen) {
 var getResult = function () {
 	log('get result');
 	var temp = [];
-	delete require.cache[require.resolve('../db/history.json')];
-	var issue = parseInt(require('../db/history.json')[0][0], 10);
+	delete require.cache[require.resolve(process.cwd() + '/db/history.json')];
+	var issue = parseInt(require(process.cwd() + '/db/history.json')[0][0], 10);
 	++issue;
-	setTimeout(getResult, getTimerTime('00:00:00'));
+
+	setTimeout(function () {
+		setTimeout(getResult, getTimerTime('00:00:00'));
+	}, 5000);
+	
 	try {
-		delete require.cache[require.resolve('../db/result.json')];
-		var result = require('../db/result.json');
+		delete require.cache[require.resolve(process.cwd() + '/db/result.json')];
+		var result = require(process.cwd() + '/db/result.json');
 		if (result[issue + '']) {
 			return result[issue + ''];
 		}
@@ -191,14 +199,14 @@ var getResult = function () {
 		var result = {};
 	}
 
-	delete require.cache[require.resolve('../db/30_red_miss.json')];
-	var r30 = require('../db/30_red_miss.json');
-	delete require.cache[require.resolve('../db/30_blue_miss.json')];
-	var b30 = require('../db/30_blue_miss.json');
+	delete require.cache[require.resolve(process.cwd() + '/db/30_red_miss.json')];
+	var r30 = require(process.cwd() + '/db/30_red_miss.json');
+	delete require.cache[require.resolve(process.cwd() + '/db/30_blue_miss.json')];
+	var b30 = require(process.cwd() + '/db/30_blue_miss.json');
 	delete require.cache[require.resolve('../db/60_red_miss.json')];
-	var r60 = require('../db/60_red_miss.json');
+	var r60 = require(process.cwd() + '/db/60_red_miss.json');
 	delete require.cache[require.resolve('../db/60_blue_miss.json')];
-	var b60 = require('../db/60_blue_miss.json');
+	var b60 = require(process.cwd() + '/db/60_blue_miss.json');
 
 	temp.push(compute(Object.assign({}, r30), Object.assign({}, b30)));
 	temp.push(compute(Object.assign({}, r60), Object.assign({}, b60)));
@@ -207,7 +215,7 @@ var getResult = function () {
 
 	result[issue + ''] = temp;
 
-	fs.outputJson('../db/result.json', result, function (err) {
+	fs.outputJson(process.cwd() + '/db/result.json', result, function (err) {
 
 	});	
 
@@ -267,8 +275,8 @@ var compute = function (r, b) {
 };
 
 var deepCompute = function (r, b, count) {
-	var redMiss = require('../db/red_miss.json');
-	var blueMiss = require('../db/blue_miss.json');
+	var redMiss = require(process.cwd() + '/db/red_miss.json');
+	var blueMiss = require(process.cwd() + '/db/blue_miss.json');
 	redMiss = Object.assign({}, redMiss);
 	blueMiss = Object.assign({}, blueMiss);
 	var result = [], max = [];
@@ -348,14 +356,16 @@ var getData = function () {
 	});	
 };
 
+// getData(); 
+// getResult();
 setTimeout(getData, getTimerTime('23:00:00'));
 setTimeout(getResult, getTimerTime('00:00:00'));
 
 exports.getResult = function () {
-	delete require.cache[require.resolve('../db/result.json')];
-	return require('../db/result.json');
+	delete require.cache[require.resolve(process.cwd() + '/db/result.json')];
+	return require(process.cwd() + '/db/result.json');
 };
 exports.getHistory = function () {
-	delete require.cache[require.resolve('../db/history.json')];
-	return require('../db/history.json');
+	delete require.cache[require.resolve(process.cwd() + '/db/history.json')];
+	return require(process.cwd() + '/db/history.json');
 };
