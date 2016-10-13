@@ -203,13 +203,20 @@ var getResult = function () {
 	var r30 = require(process.cwd() + '/db/30_red_miss.json');
 	delete require.cache[require.resolve(process.cwd() + '/db/30_blue_miss.json')];
 	var b30 = require(process.cwd() + '/db/30_blue_miss.json');
+
 	delete require.cache[require.resolve('../db/60_red_miss.json')];
 	var r60 = require(process.cwd() + '/db/60_red_miss.json');
 	delete require.cache[require.resolve('../db/60_blue_miss.json')];
 	var b60 = require(process.cwd() + '/db/60_blue_miss.json');
 
+	delete require.cache[require.resolve('../db/77_red_miss.json')];
+	var r77 = require(process.cwd() + '/db/77_red_miss.json');
+	delete require.cache[require.resolve('../db/77_blue_miss.json')];
+	var b77 = require(process.cwd() + '/db/77_blue_miss.json');
+
 	temp.push(compute(Object.assign({}, r30), Object.assign({}, b30)));
 	temp.push(compute(Object.assign({}, r60), Object.assign({}, b60)));
+	temp.push(compute(Object.assign({}, r77), Object.assign({}, b77)));
 	temp.push(deepCompute(Object.assign({}, r30), Object.assign({}, b30), 777));
 	temp.push(deepCompute(Object.assign({}, r60), Object.assign({}, b60), 777));
 
@@ -360,6 +367,10 @@ var getData = function () {
 // getResult();
 setTimeout(getData, getTimerTime('23:00:00'));
 setTimeout(getResult, getTimerTime('00:00:00'));
+
+setTimeout(function () {
+	missStat(77);
+}, getTimerTime('23::45:00'));
 
 exports.getResult = function () {
 	delete require.cache[require.resolve(process.cwd() + '/db/result.json')];
