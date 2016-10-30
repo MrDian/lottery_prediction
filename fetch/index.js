@@ -365,8 +365,8 @@ var getData = function () {
 
 // getData(); 
 // getResult();
-setTimeout(getData, getTimerTime('17:00:00'));
-setTimeout(getResult, getTimerTime('18:00:00'));
+setTimeout(getData, 0);
+setTimeout(getResult, 10000);
 
 exports.getResult = function () {
 	delete require.cache[require.resolve(process.cwd() + '/db/result.json')];
