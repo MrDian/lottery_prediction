@@ -365,12 +365,8 @@ var getData = function () {
 
 // getData(); 
 // getResult();
-setTimeout(getData, getTimerTime('23:00:00'));
-setTimeout(getResult, getTimerTime('00:00:00'));
-
-setTimeout(function () {
-	missStat(77);
-}, getTimerTime('23::45:00'));
+setTimeout(getData, getTimerTime('17:00:00'));
+setTimeout(getResult, getTimerTime('18:00:00'));
 
 exports.getResult = function () {
 	delete require.cache[require.resolve(process.cwd() + '/db/result.json')];
